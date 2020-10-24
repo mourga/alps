@@ -344,6 +344,14 @@ def load_and_cache_examples(args, task, tokenizer, evaluate=False, test=False):
     if args.local_rank == 0 and not evaluate:
         torch.distributed.barrier()  # Make sure only the first process in distributed training process the dataset, and the others will use the cache
 
+    # manual padding due to fucking bug in transformers (pad=True does not pass as an argument in batch_encode_plus -> *encode_plus* -> ...
+    for feature in features:
+        if len(feature.input_ids) < args.max_seq_length:
+            difference = args.max_seq_length - len(feature.input_ids)
+            feature.attention_mask = [1] * len(feature.input_ids) + [0] * difference
+            feature.token_type_ids = feature.token_type_ids + [tokenizer._pad_token_type_id] * difference
+            feature.input_ids = feature.input_ids + [tokenizer._pad_token_type_id] * difference
+
     # Convert to Tensors and build dataset
     all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
     all_attention_mask = torch.tensor([f.attention_mask for f in features], dtype=torch.long)
