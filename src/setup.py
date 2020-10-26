@@ -1,4 +1,6 @@
 import argparse
+import os
+
 import torch
 import random
 import numpy as np
@@ -228,16 +230,29 @@ def get_args():
         default=None,
         help="Limit the total amount of checkpoints, delete the older checkpoints in the output_dir, does not delete by default",
     )
+    parser.add_argument(
+        "--server",
+        type=str,
+        # default='ford',
+        default='jade',
+        help=" which server",
+    )
     args = parser.parse_args()
 
     # Setup CUDA, GPU & distributed training
-    if args.local_rank == -1 or args.no_cuda:
-        device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
-        args.n_gpu = torch.cuda.device_count()
-    else:  # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
-        torch.cuda.set_device(args.local_rank)
-        device = torch.device("cuda", args.local_rank)
-        torch.distributed.init_process_group(backend="nccl")
+    if args.server == 'ford':
+        os.environ["CUDA_VISIBLE_DEVICES"] = '0'
         args.n_gpu = 1
+        device = torch.device('cuda:0')
+    else:
+        if args.local_rank == -1 or args.no_cuda:
+            device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
+            args.n_gpu = torch.cuda.device_count()
+        else:  # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
+            torch.cuda.set_device(args.local_rank)
+            device = torch.device("cuda", args.local_rank)
+            torch.distributed.init_process_group(backend="nccl")
+            args.n_gpu = 1
     setattr(args, 'device', device)
+    print('device {}'.format(device))
     return args

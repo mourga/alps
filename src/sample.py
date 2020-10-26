@@ -28,8 +28,9 @@ def check_model_head(model, sampling):
         try:
             model_arch = model.config.architectures[0]
         except TypeError:
+            print(model_arch)
             raise NotImplementedError
-    if "MLMHead" in model_arch:
+    if "MLMHead" in model_arch or 'LM' in model_arch:
         model_head = "lm"
     elif "SequenceClassification" in model_arch:
         model_head = "sc"
