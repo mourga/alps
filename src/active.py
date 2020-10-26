@@ -74,6 +74,9 @@ def acquire(pool, sampled, args, model, tokenizer):
 def main():
     args = setup.get_args()
     setup.set_seed(args)
+
+    print(args)
+
     if not os.path.exists(args.output_dir):
         os.makedirs(args.output_dir)
 
