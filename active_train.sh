@@ -6,8 +6,8 @@ TASK_NAME=imdb
 MODEL_TYPE=bert
 MODEL_NAME=bert-base-uncased
 SEED=125
-COLDSTART=rand
-SAMPLING=badge
+COLDSTART=none
+SAMPLING=alps
 INCREMENT=100
 MAX_SIZE=1000
 ### end
