@@ -37,8 +37,8 @@ def check_model_head(model, sampling):
     else:
         raise NotImplementedError
     sampling_head = sampling_to_head(sampling)
-    print('sampling head'.format(sampling_head))
-    print('model head'.format(model_head))
+    print('sampling head {}'.format(sampling_head))
+    print('model head {}'.format(model_head))
     return model_head == sampling_head
 
 def random(inputs, **kwargs):
